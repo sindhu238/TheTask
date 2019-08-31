@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">The Task</string>
+    <string name="response_code">Response Code:</string>
+    <string name="times_fetched">Times Fetched:</string>
+    <string name="fetch_content">Fetch Content</string>
+    <string name="no_network_connection">No Network Connection</string>
+</resources>

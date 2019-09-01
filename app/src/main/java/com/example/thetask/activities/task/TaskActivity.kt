@@ -40,8 +40,8 @@ class TaskActivity : DaggerAppCompatActivity(), TaskContract.View {
         timesFetchedTV.text = "$count"
     }
 
-    override fun displaySnackBar() {
-        Snackbar.make(binding.containerView, getString(R.string.no_network_connection), Snackbar.LENGTH_SHORT)
+    override fun displaySnackBar(strResource: Int) {
+        Snackbar.make(binding.containerView, getString(strResource), Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {

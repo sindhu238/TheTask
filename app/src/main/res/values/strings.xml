@@ -4,4 +4,5 @@
     <string name="times_fetched">Times Fetched:</string>
     <string name="fetch_content">Fetch Content</string>
     <string name="no_network_connection">No Network Connection</string>
+    <string name="server_down">Server Down</string>
 </resources>

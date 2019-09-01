@@ -9,7 +9,7 @@ interface TaskContract: BaseContract {
         val isConnected: Boolean
 
         fun updateData(code: String, count: Int)
-        fun displaySnackBar()
+        fun displaySnackBar(strResource: Int)
     }
 
     interface Presenter<T: View>: BaseContract.Presenter<T> {

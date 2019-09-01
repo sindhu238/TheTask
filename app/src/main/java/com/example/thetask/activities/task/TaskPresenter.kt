@@ -1,6 +1,7 @@
 package com.example.thetask.activities.task
 
 import android.content.SharedPreferences
+import com.example.thetask.R
 import com.example.thetask.api.NetworkType
 import com.example.thetask.baseContract.BasePresenter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -33,15 +34,17 @@ class TaskPresenter @Inject constructor(
                     network.getResponseCode(it)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { nextPath ->
+                .subscribe({ nextPath ->
                     sharedPreference.apply {
                         val count = getInt("count", 0) + 1
                         edit().putInt("count", count).apply()
                         view?.updateData(nextPath.response_code, count)
                     }
-                }.addTo(bag)
+                }, {
+                    view?.displaySnackBar(R.string.server_down)
+                }).addTo(bag)
         } else {
-            view?.displaySnackBar()
+            view?.displaySnackBar(R.string.no_network_connection)
         }
     }
 

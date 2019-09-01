@@ -45,14 +45,6 @@ class TaskPresenterTest {
         RxJavaPlugins.setInitIoSchedulerHandler { immediate }
         MockitoAnnotations.initMocks(this)
         presenter = TaskPresenter(network, sharedPreferences)
-
-        val testPath = "http://localhost:8000/d/"
-        val testResponseCode = "Sample Code"
-        whenever(network.getNextPath()).thenReturn(Single.just(NextPath(testPath)))
-        whenever(network.getResponseCode("/d/")).thenReturn(Single.just(TaskInfo(testPath, testResponseCode)))
-        whenever(sharedPreferences.edit()).thenReturn(editor)
-        whenever(sharedPreferences.getInt("count", 0)).thenReturn(0)
-        whenever(editor.putInt("count", 1)).thenReturn(editor)
     }
 
     @After
@@ -77,6 +69,7 @@ class TaskPresenterTest {
     @Test
     fun `test updating of response code and response times - When Internet is Connected`() {
         // Arrange
+        mockSetup()
         whenever(view.isConnected).thenReturn(true)
 
         // Act
@@ -84,12 +77,30 @@ class TaskPresenterTest {
 
         // Assert
         verify(view).updateData("Sample Code", 1)
-        verify(view, never()).displaySnackBar()
+        verify(view, never()).displaySnackBar(any())
+    }
+
+    @Test
+    fun `test error connection`() {
+        // Arrange
+        val testPath = "errorPath"
+        val testResponseCode = "Sample Code"
+        whenever(network.getNextPath()).thenReturn(Single.just(NextPath(testPath)))
+        whenever(network.getResponseCode("d")).thenReturn(Single.just(TaskInfo(testPath, testResponseCode)))
+        whenever(view.isConnected).thenReturn(true)
+
+        // Act
+        presenter.attachView(view)
+
+        // Assert
+        verify(view, never()).updateData(any(), any())
+        verify(view).displaySnackBar(any())
     }
 
     @Test
     fun `test no interactions - Internet Disconnected`() {
         // Arrange
+        mockSetup()
         whenever(view.isConnected).thenReturn(false)
 
         // Act
@@ -97,7 +108,7 @@ class TaskPresenterTest {
 
         // Assert
         verify(view, never()).updateData(any(), any())
-        verify(view).displaySnackBar()
+        verify(view).displaySnackBar(any())
     }
 
     private val immediate = object : Scheduler() {
@@ -108,5 +119,15 @@ class TaskPresenterTest {
         override fun createWorker(): Worker {
             return ExecutorScheduler.ExecutorWorker(Executor { it.run() }, true)
         }
+    }
+
+    private fun mockSetup() {
+        val testPath = "http://localhost:8000/d/"
+        val testResponseCode = "Sample Code"
+        whenever(network.getNextPath()).thenReturn(Single.just(NextPath(testPath)))
+        whenever(network.getResponseCode("/d/")).thenReturn(Single.just(TaskInfo(testPath, testResponseCode)))
+        whenever(sharedPreferences.edit()).thenReturn(editor)
+        whenever(sharedPreferences.getInt("count", 0)).thenReturn(0)
+        whenever(editor.putInt("count", 1)).thenReturn(editor)
     }
 }
